@@ -1,0 +1,85 @@
+function g2o_pos=g2o(points,anchors,non_anchors,lneighbor,distMatrix,ConnectivityM,enum,n)
+% points: n*2，所有节点的真实坐标
+% anchors: anum*1 锚点的id，锚点可以为空
+% non_anchors:(n-anum)*1 非锚点的id
+% lneighbor: n*n 每一行代表顶点i的仅有距离测量的邻居列表。其中lneighbor(i,1)是邻居个数，后面是邻居列表。
+% distMatrix：n*n 距离边的测量矩阵
+% ConnectivityM：连接矩阵，1代表有距离边相连；2代表只有角度边相连；3代表有距离和角度边相连；NAN代表没有连边
+% enum: m, 边数
+% n: 要求ls_slam优化算法的迭代次数
+
+    npoints=size(points,1);
+    pos=zeros(npoints,2);
+    nbrNums=sum(ConnectivityM, 2);
+    maxNbrNum=max(nbrNums);
+    minNbrNum=min(nbrNums);
+
+
+    if minNbrNum<2
+    %    error('There is local neighbors less than 3!')
+    end
+
+    neighbors=zeros(npoints, maxNbrNum);
+    neighbors(:,1)=nbrNums;
+
+
+    for i=1:npoints
+        cnt = 1;
+        for j=1:npoints
+            if ConnectivityM(i,j)==1
+                cnt=cnt+1;
+                neighbors(i,cnt)=j;
+            end
+        end
+    end
+    Boxscale = 100;
+    plotgraph(points'*Boxscale,ConnectivityM);
+    %% localization
+
+    %% Compute local neighbor patch localization
+    patchCoordMatrix=patchLocalization(npoints, neighbors, distMatrix, ConnectivityM);
+
+
+   % patchKA = comparePatch( points , patchCoordMatrix , npoints , neighbors , distMatrix );
+    %% AAAP initialization
+    [AAAP_Pos]=aaap(npoints, neighbors, patchCoordMatrix);
+
+    %% Global registration
+    % [D,Z,T]=procrustes(points, AAAP_Pos, 'Scaling', false);
+    % registAAAPPos=Z';
+    registAAAPPos=rotation( AAAP_Pos',anchors,Anchorpos);
+    plotgraph(registAAAPPos*Boxscale,ConnectivityM);
+    plotpositions(points',registAAAPPos,ConnectivityM,Boxscale);
+
+
+    %% ARAP localization
+    ARAP_Pos=arap(npoints, AAAP_Pos, neighbors, patchCoordMatrix);
+
+
+     
+     %g2o优化
+    vmeans=zeros(2,npoints);
+    eids=zeros(2,enum);
+    emeans=zeros(2,enum);
+    etype=zeros(enum,1);
+    einfs=zeros(enum,1);
+    for j=1:npoints
+        vmeans(:,j)=[ARAP_Pos(j,1),ARAP_Pos(j,2)];
+    end
+    count=1;
+       for j=1:npoints
+           for k=1:npoints  
+               if ConnectivityM(j,k)==1
+                    etype(count)=1;
+                    eids(1,count)=j;
+                    eids(2,count)=k;
+                    emeans(:,count)=[distMatrix(j,k),0];
+                    einfs(count) = 10;
+                    count=count+1;
+               end
+           end
+       end
+    size(eids);
+    g2o_pos=ls_slam(vmeans, eids, emeans, einfs, etype, n)';
+
+end
