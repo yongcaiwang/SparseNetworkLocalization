@@ -1,0 +1,23 @@
+function [ output_args ] = camparePatch( points , patchCoordMatrix , npoints , neighbors , distMatrix)
+for i=1:npoints
+    opt=find(neighbors(i,:)>0);
+    neigh=neighbors(i,opt);
+    n=size(neigh,2);
+    neigh(n+1)=i;
+    truth = points(neigh,:);
+    patch = patchCoordMatrix(i,neigh,:);
+    patch = squeeze(patch);
+    
+    [D,Z,T]=procrustes(truth, patch, 'Scaling', false);
+%     DD=zeros(n+1)+1-eye(n+1);
+%     plotgraph(truth'*100,DD);
+%     plotgraph(patch'*100,DD);
+%     plotgraph(Z'*100,DD);
+    residual = getresidual( truth*100 , patch*100 )
+    patchKA = getKA_patch(neigh, patch ,distMatrix);
+
+end;
+
+
+end
+
