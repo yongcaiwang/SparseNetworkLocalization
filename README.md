@@ -1,10 +1,10 @@
 # SparseNetworkLocalization
 Sparse network localization using only distance measurements
 
-# 2020-05-22
-# ycw@ruc.edu.cn
+## 2020-05-22
+## ycw@ruc.edu.cn
 
-# Related work. The program is a part of our experiment in the following papers. 
+### Related work. The program is a part of our experiment in the following papers. 
 
 1. Tianyuan Sun, Yongcai Wang, Deying Li, Zhaoquan Gu, Jia Xu:
 WCS: Weighted Component Stitching for Sparse Network Localization. IEEE/ACM Trans. Netw. 26(5): 2242-2253 (2018)
