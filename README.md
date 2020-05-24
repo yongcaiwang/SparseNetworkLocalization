@@ -13,7 +13,7 @@ WCS: Weighted Component Stitching for Sparse Network Localization. IEEE/ACM Tran
 Formation Tracking in Sparse Airborne Networks. IEEE J. Sel. Areas Commun. 36(9): 2000-2014 (2018)
 
 
-#introduction of the program
+# introduction of the program
 
 1. Generate a sparse network with partially measured internode distances. 
 ![Alt text](./result/network.jpg)
