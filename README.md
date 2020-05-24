@@ -4,6 +4,15 @@ Sparse network localization using only distance measurements
 # 2020-05-22
 # ycw@ruc.edu.cn
 
+# Related work. The program is a part of our experiment in the following papers. 
+
+1. Tianyuan Sun, Yongcai Wang, Deying Li, Zhaoquan Gu, Jia Xu:
+WCS: Weighted Component Stitching for Sparse Network Localization. IEEE/ACM Trans. Netw. 26(5): 2242-2253 (2018)
+
+2. 	Yongcai Wang, Tianyuan Sun, Guoyao Rao, Deying Li:
+Formation Tracking in Sparse Airborne Networks. IEEE J. Sel. Areas Commun. 36(9): 2000-2014 (2018)
+
+
 #introduction of the program
 
 1. Generate a sparse network with partially measured internode distances. 
